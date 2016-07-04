@@ -1,0 +1,195 @@
+* {
+	overflow-x: hidden;
+}
+
+.site-wrapper {
+	position: absolute;
+	min-width: 100%;
+}
+
+.show-menu {
+	right: -250px !important;
+}
+
+.hide-menu {
+	right: 0px;
+}
+
+/*======= Navigation Menu Stlyes ==========*/
+.icon-bar {
+	background-color: #fff;
+}
+
+li a {
+	color: #fff;
+}
+
+#menuBar {
+	background-color: #000;
+	position: fixed;
+  z-index: 999;
+  width: 100%;
+  min-height: 3em;
+}
+
+#hamburgerIcon {
+	float: left;
+}
+
+.mobile-menu {
+	position: fixed;
+	background-color: red;
+	width: 100%;
+	height: 100%;
+}
+
+.list-group-item {
+	background-color: red;
+	border-radius: 0;
+}
+
+.list-group-item:first-child,
+.list-group-item:last-child {
+	border-bottom-right-radius: 0px;
+	border-bottom-left-radius: 0px;
+}
+
+/*======= Sign Up/Sign In Forms ========*/
+#signUpContainer {
+	height: 40em;
+	background-color: #fff;
+}
+
+#signInContainer {
+	height: 30em;
+	background-color: #fff;
+}
+
+.form-title {
+	text-transform: uppercase;
+	font-weight: bold;
+	text-align: center;
+}
+
+#signUpForm, #signInForm {
+	padding-top: 4%;
+	padding-bottom: 4%;
+}
+
+.blur-state {
+  position: relative;
+  top: 42px;
+  color: #B0BEC5;
+  padding-left: 16px;
+}
+
+.form-control {
+	border: 0px;
+	border-radius: 0 !important;
+	border-bottom: 2px solid #B0BEC5;
+	box-shadow: none;
+}
+
+.form-control:focus {
+	border-bottom-color: #01579B;
+	box-shadow: none;
+}
+
+/*======= Main Content =========*/
+
+.main-content-container {
+	background-color: #fff;
+}
+
+img {
+	max-width: 100%;
+	height: auto;
+}
+
+.event-title {
+	font-weight: 700;
+}
+
+.tmb-nail-btn {
+	width: 100%;
+}
+
+/*========== Events.html Styles ============*/
+
+.thumbnail-container {
+	background-color: #fff;
+}
+
+#createEventTmbNail {
+	background-color: green;
+}
+
+#createEventTmbNail h4,
+#createEventTmbNail p {
+	color: #fff;
+}
+
+footer {
+	width: 100%;
+	background-color: #757575;
+	overflow: hidden;
+}
+
+p {
+	margin: 1em 1em !important;
+}
+
+
+/*======= Media Queries ========*/
+
+@media only screen and (min-width : 320px) {
+        
+}
+
+/* Extra Small Devices, Phones */ 
+@media only screen and (min-width : 480px) {
+
+}
+
+/* Small Devices, Tablets */
+@media only screen and (min-width : 768px) {
+
+}
+
+/* Medium Devices, Desktops */
+@media only screen and (min-width : 992px) {
+
+	#overlay {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		background-color: blue;
+		color: #fff;
+		opacity: 0.7;
+		display: none;
+	}
+
+	#menuBar {
+		min-height: 8%;
+	}
+
+	#hamburgerIcon {
+		float: none;
+		margin-left: 6%;
+	}
+
+	.events-list-container {
+		padding-top: 10em;
+	}
+
+	.thumbnail {
+		margin-left: .3em;
+		margin-right: .3em;
+		height: 14em;
+	}
+}
+
+/* Large Devices, Wide Screens */
+@media only screen and (min-width : 1200px) {
+
+}
