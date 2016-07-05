@@ -1,9 +1,13 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 import sorter
+import csv
 # Create your views here.
 def home(request):
-    violation_list = sorter.create_violation_list()
-    final_list = sorter.createFinalList(violation_list)
-    json = sorter.final_list_to_json(final_list)
-    return render(request, "main/home.html", {'message': json})
+    final_list = sorter.createFinalList(sorter.create_violation_list())
+    p = open(r'C:\Users\Solomon\Documents\GitHub\WebApp\main\templates\main\final.csv', 'wb')
+    writer = csv.writer(p)
+    writer.writerows(final_list)
+    return render(request, "main/home.html")
+def final(request):
+    return render(request, "main/final.csv")

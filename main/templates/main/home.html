@@ -1,39 +1,199 @@
 {% load staticfiles %}
-
- <link href="{% static '/css/bootstrap.min.css' %}" rel="stylesheet">
- <link href="{% static '/css/main.css' %}" rel="stylesheet">
- <link href="{% static '/css/heroic-features.css' %}" rel="stylesheet">
- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous"
+<!DOCTYPE html>
 <html>
-<head>
-	<title>Hello, World!</title>
-</head>
-<body>
-	<h1>{{message}}</h1>
+  <head>
+    <meta charset="utf-8">
+    <title>Local Violations 2012</title>
+    
+    <style>
+      #chart {
+        height: 360px;
+        margin: 0 auto;                                               
+        position: relative;
+        width: 360px;
+      }
+      .tooltip {
+        background: #eee;
+        box-shadow: 0 0 5px #999999;
+        color: #333;
+        display: none;
+        font-size: 12px;
+        left: 130px;
+        padding: 10px;
+        position: absolute;
+        text-align: center;
+        top: 95px;
+        width: 80px;
+        z-index: 10;
+      }
+      .legend {
+        font-size: 12px;
+      }
+      rect {
+        cursor: pointer;                                              
+        stroke-width: 2;
+      }
+      rect.disabled {                                                 
+        fill: transparent !important;                                 
+      }                                                               
+      h1 {                                                            
+        font-size: 14px;                                              
+        text-align: center;                                           
+      }
+      h3{
+        text-align: center;
+        }                                                               
+    </style>
+  </head>
+  <body>
+    <h1>Local Sanitation Violaions 2012</h1>             
+    <div id="chart"></div>
+    {% block javascript %}
+       <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script>
+      (function(d3) {
+        'use strict';
+        debugger;
+        var width = 360;
+        var height = 360;
+        var radius = Math.min(width, height) / 2;
+        var donutWidth = 55;
+        var legendRectSize = 18;
+        var legendSpacing = 4;
 
-	 <div class="input-group input-group-lg">
-  <span class="input-group-addon" id="sizing-addon1">@</span>
-  <input type="text" class="form-control" placeholder="Username" aria-describedby="sizing-addon1">
-</div>
+        var color = d3.scale.category20b();
 
-<div class="input-group">
-  <span class="input-group-addon" id="sizing-addon2">@</span>
-  <input type="text" class="form-control" placeholder="Username" aria-describedby="sizing-addon2">
-</div>
+        var svg = d3.select('#chart')
+          .append('svg')
+          .attr('width', width)
+          .attr('height', height)
+          .append('g')
+          .attr('transform', 'translate(' + (width / 2) + 
+            ',' + (height / 2) + ')');
 
-<div class="input-group input-group-sm">
-  <span class="input-group-addon" id="sizing-addon3">@</span>
-  <input type="text" class="form-control" placeholder="Username" aria-describedby="sizing-addon3">
-</div>
-</body>
+        var arc = d3.svg.arc()
+          .innerRadius(radius - donutWidth)
+          .outerRadius(radius);
 
-{% block javascript %}
-    <script src="{% static '/js/jquery.js' %}"></script>
+        var pie = d3.layout.pie()
+          .value(function(d) { return d.count; })
+          .sort(null);
 
-    <script src="{%static '/js/jquery-ui.min.js' %}"></script>
+        var tooltip = d3.select('#chart')
+          .append('div')
+          .attr('class', 'tooltip');
+        
+        tooltip.append('div')
+          .attr('class', 'label');
 
-    <script src="{% static '/js/bootstrap.min.js' %}"></script>
+        tooltip.append('div')
+          .attr('class', 'count');
 
-    <script src="{% static '/js/script.js' %}"></script>
-{% endblock javascript %}
+        tooltip.append('div')
+          .attr('class', 'percent');
+        tooltip.append('div')
+            .attr('class', 'first-violation')
+        tooltip.append('div')
+            .attr('class', 'last-violation')
+
+        d3.csv('final.csv', function(error, dataset) {
+          dataset.forEach(function(d) {
+            d.count = +d.count;
+            d.enabled = true;                                        
+          });
+
+          var path = svg.selectAll('path')
+            .data(pie(dataset))
+            .enter()
+            .append('path')
+            .attr('d', arc)
+            .attr('fill', function(d, i) { 
+              return color(d.data.label); 
+            })                                                        
+            .each(function(d) { this._current = d; });                
+
+          path.on('mouseover', function(d) {
+            var total = d3.sum(dataset.map(function(d) {
+              return (d.enabled) ? d.count : 0;                       
+            }));
+            var percent = Math.round(1000 * d.data.count / total) / 10;
+            tooltip.select('.label').html(d.data.label);
+            tooltip.select('.count').html(d.data.count); 
+            tooltip.select('.percent').html(percent + '%'); 
+            tooltip.select('.first-violation').html(d.data.first_violation)
+            tooltip.select('.last-violation').html(d.data.last_violation)
+            tooltip.style('display', 'block');
+          });
+          
+          path.on('mouseout', function() {
+            tooltip.style('display', 'none');
+          });
+
+
+          var legend = svg.selectAll('.legend')
+            .data(color.domain())
+            .enter()
+            .append('g')
+            .attr('class', 'legend')
+            .attr('transform', function(d, i) {
+              var height = legendRectSize + legendSpacing;
+              var offset =  height * color.domain().length / 2;
+              var horz = -2 * legendRectSize;
+              var vert = i * height - offset;
+              return 'translate(' + horz + ',' + vert + ')';
+            });
+
+          legend.append('rect')
+            .attr('width', legendRectSize)
+            .attr('height', legendRectSize)                                   
+            .style('fill', color)
+            .style('stroke', color)                                  
+            .on('click', function(label) {                            
+              var rect = d3.select(this);                             
+              var enabled = true;                                     
+              var totalEnabled = d3.sum(dataset.map(function(d) {     
+                return (d.enabled) ? 1 : 0;                           
+              }));                                                    
+              
+              if (rect.attr('class') === 'disabled') {                
+                rect.attr('class', '');                               
+              } else {                                                
+                if (totalEnabled < 2) return;                         
+                rect.attr('class', 'disabled');                       
+                enabled = false;                                      
+              }                                                       
+
+              pie.value(function(d) {                                 
+                if (d.label === label) d.enabled = enabled;           
+                return (d.enabled) ? d.count : 0;                     
+              });                                                     
+
+              path = path.data(pie(dataset));                         
+
+              path.transition()                                       
+                .duration(750)                                        
+                .attrTween('d', function(d) {                         
+                  var interpolate = d3.interpolate(this._current, d); 
+                  this._current = interpolate(0);                     
+                  return function(t) {                                
+                    return arc(interpolate(t));                       
+                  };                                                  
+                });                                                   
+            });                                                       
+            
+          legend.append('text')
+            .attr('x', legendRectSize + legendSpacing)
+            .attr('y', legendRectSize - legendSpacing)
+            .text(function(d) { return d; });
+
+        });
+
+      })(window.d3);
+    </script>
+    {% endblock javascript %}
+</br>
+</br>
+
+    <h3><a class="link" id="test" href="https://github.com/stoppable408/WebApp">See the code here!</a></h3>
+  </body>
 </html>
